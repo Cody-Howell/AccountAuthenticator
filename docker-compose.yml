@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: 123456abc
+      POSTGRES_USER: cody
+      POSTGRES_DB: accountAuth
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    # command: ["postgres", "-c", "log_statement=all"] # Enables verbose logging
+

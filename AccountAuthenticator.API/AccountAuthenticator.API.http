@@ -1,0 +1,38 @@
+@AA = http://localhost:5133
+@Username = Cody
+@Password = haha
+@Key = CkfoBOav3mxHs0Rwkcok
+
+###
+GET {{AA}}/users
+###
+POST {{AA}}/user?accountName=Cody
+###
+POST {{AA}}/user/signin
+Content-Type: application/json
+{
+  "user": "{{Username}}",
+  "pass": "{{Password}}"
+}
+###
+GET {{AA}}/user/valid
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
+#### Enables password change
+PATCH {{AA}}/user 
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
+Content-Type: application/json
+{
+  "user": "{{Username}}",
+  "pass": "{{Password}}"
+}
+###
+DELETE {{AA}}/user/signout
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
+###
+DELETE {{AA}}/user/signout/global
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
+###

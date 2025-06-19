@@ -19,6 +19,7 @@ app.UseMiddleware<IdentityMiddleware>();
 app.UseRouting();
 
 app.MapGet("/users", (AuthService service) => service.GetAllUsers());
+app.MapGet("/user", (AuthService service, string account) => service.GetUser(account));
 app.MapPost("/user", (AuthService service, string accountName) => {
     try {
         service.AddUser(accountName);
@@ -42,18 +43,16 @@ app.MapPatch("/user", (AuthService service, SignIn obj) => {
 });
 
 app.MapGet("/user/valid", () => Results.Ok());
+app.MapGet("/user/guid", (AccountInfo info) => info.Guid);
 
-app.MapDelete("/user/signout", (AuthService service, HttpContext content) => {
-    string account = content.Request.Headers["Account-Auth-Account"]!;
-    string key = content.Request.Headers["Account-Auth-ApiKey"]!;
-    service.KeySignOut(account, key);
+app.MapDelete("/user/signout", (AuthService service, AccountInfo info) => {
+    service.KeySignOut(info.AccountName, info.ApiKey);
 
     return Results.Accepted();
 });
 
-app.MapDelete("/user/signout/global", (AuthService service, HttpContext content) => {
-    string account = content.Request.Headers["Account-Auth-Account"]!;
-    service.GlobalSignOut(account);
+app.MapDelete("/user/signout/global", (AuthService service, AccountInfo info) => {
+    service.GlobalSignOut(info.AccountName);
 
     return Results.Accepted();
 });
@@ -61,6 +60,7 @@ app.MapDelete("/user/signout/global", (AuthService service, HttpContext content)
 app.Run();
 
 public class IDMiddlewareConfig : IIDMiddlewareConfig {
+    public string? Whitelist => null;
     public List<string> Paths => ["/users", "/user", "/user/signin"];
     public TimeSpan? ExpirationDate => null;
     public TimeSpan? ReValidationDate => null;

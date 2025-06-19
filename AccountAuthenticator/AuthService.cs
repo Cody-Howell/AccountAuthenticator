@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 
 namespace AccountAuthenticator;
 
@@ -8,6 +7,10 @@ namespace AccountAuthenticator;
 /// Service implementation to handle the database. Runs through Dapper.
 /// </summary>
 public class AuthService(IDbConnection conn) {
+    private Dictionary<string, Guid> guidLookup = new();
+    private Dictionary<string, int> roleLookup = new();
+
+    #region User Creation/Validation
     /// <summary>
     /// Adds a new user if one doesn't already exist and throws an error if they do. Should 
     /// only be used in the sign-up process.
@@ -15,9 +18,10 @@ public class AuthService(IDbConnection conn) {
     /// <exception cref="ArgumentException"></exception>
     public void AddUser(string accountName, string defaultPassword = "password") {
         string passHash = StringHelper.CustomHash(defaultPassword);
-        var AddUser = "insert into \"HowlDev.User\" (accountName, passHash, role) values (@accountName, @passHash, 0)";
+        Guid guid = Guid.NewGuid();
+        var AddUser = "insert into \"HowlDev.User\" values (@guid, @accountName, @passHash, null, null, 0)";
         try {
-            conn.Execute(AddUser, new { accountName, passHash });
+            conn.Execute(AddUser, new { guid, accountName, passHash });
         } catch {
             throw new ArgumentException("Account name already exists.");
         }
@@ -51,13 +55,15 @@ public class AuthService(IDbConnection conn) {
     }
 
     /// <summary>
-    /// Returns the user object from the given email. Throws an exception if the user does not exist.
+    /// Returns the user object from the given account. Throws an exception if the user does not exist.
     /// </summary>
-    public Account GetUser(string email) {
-        var GetUsers = "select p.id, p.accountName, p.email, p.displayName, p.role from \"HowlDev.User\" p where email = @email";
-        return conn.QuerySingle<Account>(GetUsers, new { email });
+    public Account GetUser(string account) {
+        var GetUsers = "select p.id, p.accountName, p.email, p.displayName, p.role from \"HowlDev.User\" p where accountName = @account";
+        return conn.QuerySingle<Account>(GetUsers, new { account });
     }
+    #endregion
 
+    #region Validation
     /// <summary>
     /// You can decide whether or not the returned date is valid (if you want expiration dates). 
     /// Throws an exception if no API key exists in the table. 
@@ -97,6 +103,7 @@ public class AuthService(IDbConnection conn) {
         var validate = $"update \"HowlDev.Key\" hdk set validatedon = '{time}' where accountId = @accountId and apiKey = @key";
         conn.Execute(validate, new { accountId, key });
     }
+    #endregion
 
     /// <summary>
     /// Updates the user's password in the table. Does not affect any of the API keys currently
@@ -108,6 +115,7 @@ public class AuthService(IDbConnection conn) {
         conn.Execute(pass, new { accountName, newHash });
     }
 
+    #region Deletion/Sign Out
     /// <summary>
     /// Deletes all sign-in records by the user and their place in the User table.
     /// </summary>
@@ -143,4 +151,37 @@ public class AuthService(IDbConnection conn) {
         var removeKey = "delete from \"HowlDev.Key\" where validatedOn < @expirationTime";
         conn.Execute(removeKey, new { expirationTime });
     }
+    #endregion
+
+    #region Search
+    /// <summary>
+    /// Returns the Guid of a given account name. Has an internal dictionary to reduce 
+    /// database calls and enable quick lookup.
+    /// </summary>
+    public Guid GetGuid(string account) {
+        if (guidLookup.ContainsKey(account)) {
+            return guidLookup[account];
+        } else {
+            string guid = "select id from \"HowlDev.User\" where accountName = @account";
+            Guid theirGuid = conn.QuerySingle<Guid>(guid, new { account });
+            guidLookup.Add(account, theirGuid);
+            return theirGuid;
+        }
+    }
+
+    /// <summary>
+    /// Returns the Role of a given account name. Has an internal dictionary to reduce database calls
+    /// and enable quick lookups. 
+    /// </summary>
+    public int GetRole(string account) {
+        if (roleLookup.ContainsKey(account)) {
+            return roleLookup[account];
+        } else {
+            string role = "select role from \"HowlDev.User\" where accountName = @account";
+            int theirRole = conn.QuerySingle<int>(role, new { account });
+            roleLookup.Add(account, theirRole);
+            return theirRole;
+        }
+    }
+    #endregion
 }

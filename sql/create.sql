@@ -1,5 +1,5 @@
 CREATE TABLE "HowlDev.User" (
-  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+  id UUID PRIMARY KEY,
   accountName varchar(200) UNIQUE NOT NULL, 
   passHash varchar(200) NOT NULL, 
   email varchar(200) NULL, 

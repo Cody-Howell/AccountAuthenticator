@@ -19,7 +19,13 @@ public class IdentityMiddleware(RequestDelegate next, AuthService service, IIDMi
     /// 
     /// </summary>
     public async Task InvokeAsync(HttpContext context) {
-        if (config.Paths.Contains(context.Request.Path)) {
+        bool startsWith = false;
+        if (config.Whitelist is not null) {
+            startsWith = !context.Request.Path.ToString().StartsWith(config.Whitelist);
+        }
+
+
+        if (config.Paths.Contains(context.Request.Path) || startsWith) {
             await next(context);
         } else {
             // Validate user here
@@ -31,7 +37,18 @@ public class IdentityMiddleware(RequestDelegate next, AuthService service, IIDMi
                 return;
             }
 
-            DateTime? output = new DateTime();
+            try {
+                Guid guid = service.GetUser(account).Id;
+                context.Items["Guid"] = guid;
+            } 
+            catch {
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsync("Account does not exist.");
+                return;
+            }
+
+
+            DateTime? output;
             try {
                 output = service.IsValidApiKey(account, key);
             } catch {

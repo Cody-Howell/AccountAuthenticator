@@ -12,6 +12,13 @@ public interface IIDMiddlewareConfig {
     List<string> Paths { get; }
 
     /// <summary>
+    /// If not null, the middleware will only check paths that start with this 
+    /// path. For example, in some projects, all API calls start with <c>/api</c>, so adding 
+    /// that will only check paths that start with <c>/api</c>. 
+    /// </summary>
+    string? Whitelist { get; }
+
+    /// <summary>
     /// Set to the timespan that API keys are valid for. <c>Null</c> enables no time validation 
     /// (not recommended). 
     /// </summary>

@@ -9,7 +9,6 @@ Recommended API layout in `Program.cs`:
 ```csharp
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<IIDMiddlewareConfig, IDMiddlewareConfig>();
-builder.Services.AddSingleton<IEmailService, EmailService>();
 
 var app = builder.Build();
 
@@ -18,8 +17,8 @@ app.UseMiddleware<IdentityMiddleware>();
 
 Important headers: 
 ```
-Email-Auth-Email: {{email}}
-Email-Auth-ApiKey: {{key}}
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
 ```
 
 ## SQL
@@ -57,6 +56,24 @@ A few more features are coming before I consider the library done.
 - Move headers to standard `Authentication` header (for both libraries)
 
 ## Changelog
+
+0.9.0 (6/19/25)
+
+- Transferred DB calls to include UUID's instead of sequential ints 
+
+0.8.4 (5/19/25)
+
+- Removed last bugfix. 
+- Updated information on this Readme
+- BREAKING CHANGE: IIDMiddlewareConfig now has an additional `Whitelist` property, *actually* enabling SPAs.
+
+0.8.2 (5/19/25)
+
+- IdentityMiddleware does not enforce path restrictions to anything in /assets, allowing for SPAs.
+
+0.8.1 (5/16/25)
+
+- GetUser now takes and checks an AccountName instead of an Email.
 
 0.8 (5/15/25)
 

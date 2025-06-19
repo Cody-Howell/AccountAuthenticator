@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "bbo7GUk82Wk=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Cody\\myCodeDir\\_Projects\\Libraries\\AccountAuthenticator\\AccountAuthenticator.IntegrationTests\\AccountAuthenticator.IntegrationTests.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Cody\\.nuget\\packages\\enumerableasyncprocessor\\2.0.6\\enumerableasyncprocessor.2.0.6.nupkg.sha512",
+    "C:\\Users\\Cody\\.nuget\\packages\\microsoft.testing.extensions.trxreport.abstractions\\1.4.3\\microsoft.testing.extensions.trxreport.abstractions.1.4.3.nupkg.sha512",
+    "C:\\Users\\Cody\\.nuget\\packages\\microsoft.testing.platform\\1.4.3\\microsoft.testing.platform.1.4.3.nupkg.sha512",
+    "C:\\Users\\Cody\\.nuget\\packages\\microsoft.testing.platform.msbuild\\1.4.3\\microsoft.testing.platform.msbuild.1.4.3.nupkg.sha512",
+    "C:\\Users\\Cody\\.nuget\\packages\\tunit\\0.6.159\\tunit.0.6.159.nupkg.sha512",
+    "C:\\Users\\Cody\\.nuget\\packages\\tunit.assertions\\0.6.159\\tunit.assertions.0.6.159.nupkg.sha512",
+    "C:\\Users\\Cody\\.nuget\\packages\\tunit.core\\0.6.159\\tunit.core.0.6.159.nupkg.sha512",
+    "C:\\Users\\Cody\\.nuget\\packages\\tunit.engine\\0.6.159\\tunit.engine.0.6.159.nupkg.sha512"
+  ],
+  "logs": []
+}

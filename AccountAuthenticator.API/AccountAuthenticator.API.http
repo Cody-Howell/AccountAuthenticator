@@ -1,10 +1,12 @@
 @AA = http://localhost:5133
 @Username = Cody
-@Password = haha
-@Key = CkfoBOav3mxHs0Rwkcok
+@Password = password
+@Key = Q1ejJghm9tQPSHdt9BdW
 
 ###
 GET {{AA}}/users
+###
+GET {{AA}}/user?account=Cody
 ###
 POST {{AA}}/user?accountName=Cody
 ###
@@ -16,6 +18,10 @@ Content-Type: application/json
 }
 ###
 GET {{AA}}/user/valid
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
+###
+GET {{AA}}/user/guid
 Account-Auth-Account: {{Username}}
 Account-Auth-ApiKey: {{Key}}
 #### Enables password change

@@ -50,16 +50,31 @@ but this is what's required to make my auth work.
 ## Upcoming Features
 
 A few more features are coming before I consider the library done. 
-
 - Integration tests with the Docker Compose to run full auth flows
 	- Test throwing errors and what you should expect as a return value 
 - Move headers to standard `Authentication` header (for both libraries)
+    - AS OF 0.9 - My library works in a fundamentally different way, will not be migrating to this
 
 ## Changelog
 
 0.9.0 (6/19/25)
 
-- Transferred DB calls to include UUID's instead of sequential ints 
+- BREAKING CHANGES
+	- Transferred DB to include UUID's instead of sequential ints 
+	- Otherwise simplified the database schema to only include necessities
+	- Entirely removed MiddlewareConfig interface, moved it to a new extension method for the app (see below)
+- Included a new class to more easily get auth information into your endpoints. Use the AccountInfo parameter!
+- Added a few AuthService methods to retrieve Role and Guid information
+- Added more methods to update values within the database
+
+How to use the new middleware setup: 
+
+```csharp
+// Can also include Expiration timespans, Revalidation timespans, or Whitelist
+app.UseAccountIdentityMiddleware(options => {
+    options.Paths = ["/users", "/user", "/user/signin"];
+});
+```
 
 0.8.4 (5/19/25)
 

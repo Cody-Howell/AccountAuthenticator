@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Http;
 /// it will remove that key. If it's under but over the re-auth time (also assuming config), it will 
 /// reset the expiration date. Then it will let the response pass. 
 /// </summary>
-public class IdentityMiddleware(RequestDelegate next, AuthService service, IIDMiddlewareConfig config) {
+public class IdentityMiddleware(RequestDelegate next, AuthService service, IDMiddlewareConfig config) {
     /// <summary>
     /// 
     /// </summary>

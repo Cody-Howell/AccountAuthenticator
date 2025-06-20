@@ -2,8 +2,6 @@ CREATE TABLE "HowlDev.User" (
   id UUID PRIMARY KEY,
   accountName varchar(200) UNIQUE NOT NULL, 
   passHash varchar(200) NOT NULL, 
-  email varchar(200) NULL, 
-  displayName varchar(80) NULL,
   role int NOT NULL
 );
 

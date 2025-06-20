@@ -11,11 +11,12 @@ builder.Services.AddSingleton<IDbConnection>(provider => {
     return new NpgsqlConnection(connString);
 });
 builder.Services.AddSingleton<AuthService>();
-builder.Services.AddSingleton<IIDMiddlewareConfig, IDMiddlewareConfig>();
 
 var app = builder.Build();
 
-app.UseMiddleware<IdentityMiddleware>();
+app.UseAccountIdentityMiddleware(options => {
+    options.Paths = ["/users", "/user", "/user/signin"];
+});
 app.UseRouting();
 
 app.MapGet("/users", (AuthService service) => service.GetAllUsers());
@@ -41,16 +42,20 @@ app.MapPatch("/user", (AuthService service, SignIn obj) => {
     service.UpdatePassword(obj.user, obj.pass);
     return Results.Ok();
 });
+app.MapPatch("/user/role", (AuthService service, AccountInfo info, int newRole) => {
+    service.UpdateRole(info.AccountName, newRole);
+    return Results.Ok();
+});
 
 app.MapGet("/user/valid", () => Results.Ok());
 app.MapGet("/user/guid", (AccountInfo info) => info.Guid);
+app.MapGet("/user/role", (AuthService service, AccountInfo info) => service.GetRole(info.AccountName));
 
 app.MapDelete("/user/signout", (AuthService service, AccountInfo info) => {
     service.KeySignOut(info.AccountName, info.ApiKey);
 
     return Results.Accepted();
 });
-
 app.MapDelete("/user/signout/global", (AuthService service, AccountInfo info) => {
     service.GlobalSignOut(info.AccountName);
 
@@ -58,10 +63,3 @@ app.MapDelete("/user/signout/global", (AuthService service, AccountInfo info) =>
 });
 
 app.Run();
-
-public class IDMiddlewareConfig : IIDMiddlewareConfig {
-    public string? Whitelist => null;
-    public List<string> Paths => ["/users", "/user", "/user/signin"];
-    public TimeSpan? ExpirationDate => null;
-    public TimeSpan? ReValidationDate => null;
-}

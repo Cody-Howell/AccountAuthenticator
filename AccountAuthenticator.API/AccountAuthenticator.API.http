@@ -1,7 +1,7 @@
 @AA = http://localhost:5133
 @Username = Cody
 @Password = password
-@Key = Q1ejJghm9tQPSHdt9BdW
+@Key = a0O54S3JyGMqgdL3XJTs
 
 ###
 GET {{AA}}/users
@@ -24,6 +24,10 @@ Account-Auth-ApiKey: {{Key}}
 GET {{AA}}/user/guid
 Account-Auth-Account: {{Username}}
 Account-Auth-ApiKey: {{Key}}
+###
+GET {{AA}}/user/role
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
 #### Enables password change
 PATCH {{AA}}/user 
 Account-Auth-Account: {{Username}}
@@ -33,6 +37,10 @@ Content-Type: application/json
   "user": "{{Username}}",
   "pass": "{{Password}}"
 }
+### Enables role change
+PATCH {{AA}}/user/role?newRole=5
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
 ###
 DELETE {{AA}}/user/signout
 Account-Auth-Account: {{Username}}

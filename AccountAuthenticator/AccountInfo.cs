@@ -34,10 +34,10 @@ public class AccountInfo {
     /// </summary>
     public static ValueTask<AccountInfo> BindAsync(HttpContext context, ParameterInfo parameter) {
         if (!context.Request.Headers.TryGetValue("Account-Auth-Account", out var headerValue)) {
-            throw new UnauthorizedAccessException("Missing account header.");
+            throw new Exception("Should not appear, should be caught in Identity Middleware - name");
         }
         if (!context.Request.Headers.TryGetValue("Account-Auth-ApiKey", out var apiKey)) {
-            throw new UnauthorizedAccessException("Missing account header.");
+            throw new Exception("Should not appear, should be caught in Identity Middleware - key");
         }
         Guid guid = (Guid)context.Items["Guid"];
 

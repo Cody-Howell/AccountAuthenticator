@@ -19,7 +19,7 @@ public class AuthService(IDbConnection conn) {
     public void AddUser(string accountName, string defaultPassword = "password") {
         string passHash = StringHelper.CustomHash(defaultPassword);
         Guid guid = Guid.NewGuid();
-        var AddUser = "insert into \"HowlDev.User\" values (@guid, @accountName, @passHash, null, null, 0)";
+        var AddUser = "insert into \"HowlDev.User\" values (@guid, @accountName, @passHash, 0)";
         try {
             conn.Execute(AddUser, new { guid, accountName, passHash });
         } catch {
@@ -46,7 +46,7 @@ public class AuthService(IDbConnection conn) {
     /// ID. 
     /// </summary>
     public IEnumerable<Account> GetAllUsers() {
-        var GetUsers = "select p.id, p.accountName, p.displayName, p.email, p.role from \"HowlDev.User\" p order by 1";
+        var GetUsers = "select p.id, p.accountName, p.role from \"HowlDev.User\" p";
         try {
             return conn.Query<Account>(GetUsers);
         } catch {
@@ -58,7 +58,7 @@ public class AuthService(IDbConnection conn) {
     /// Returns the user object from the given account. Throws an exception if the user does not exist.
     /// </summary>
     public Account GetUser(string account) {
-        var GetUsers = "select p.id, p.accountName, p.email, p.displayName, p.role from \"HowlDev.User\" p where accountName = @account";
+        var GetUsers = "select p.id, p.accountName, p.role from \"HowlDev.User\" p where accountName = @account";
         return conn.QuerySingle<Account>(GetUsers, new { account });
     }
     #endregion
@@ -105,6 +105,7 @@ public class AuthService(IDbConnection conn) {
     }
     #endregion
 
+    #region Updates
     /// <summary>
     /// Updates the user's password in the table. Does not affect any of the API keys currently
     /// entered. 
@@ -114,6 +115,17 @@ public class AuthService(IDbConnection conn) {
         var pass = "update \"HowlDev.User\" p set passHash = @newHash where accountName = @accountName";
         conn.Execute(pass, new { accountName, newHash });
     }
+
+    /// <summary>
+    /// Updates the user's role in the table. Does not affect any current keys.
+    /// Does update the lookup dictionary with the new role. 
+    /// </summary>
+    public void UpdateRole(string accountName, int newRole) {
+        var role = "update \"HowlDev.User\" p set role = @newRole where accountName = @accountName";
+        conn.Execute(role, new { accountName, newRole });
+        roleLookup[accountName] = newRole;
+    }
+    #endregion
 
     #region Deletion/Sign Out
     /// <summary>

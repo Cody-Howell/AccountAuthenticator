@@ -1,12 +1,14 @@
 @AA = http://localhost:5133
 @Username = Cody
 @Password = password
-@Key = a0O54S3JyGMqgdL3XJTs
+@Key = usUlWJ3FMjoiIBM_1sgC
 
 ###
 GET {{AA}}/users
 ###
 GET {{AA}}/user?account=Cody
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
 ###
 POST {{AA}}/user?accountName=Cody
 ###

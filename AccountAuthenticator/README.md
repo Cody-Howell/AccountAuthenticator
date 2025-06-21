@@ -8,11 +8,12 @@ Recommended API layout in `Program.cs`:
 
 ```csharp
 builder.Services.AddSingleton<AuthService>();
-builder.Services.AddSingleton<IIDMiddlewareConfig, IDMiddlewareConfig>();
 
 var app = builder.Build();
 
-app.UseMiddleware<IdentityMiddleware>();
+app.UseAccountIdentityMiddleware(options => {
+    // Apply Path, Whitelist, or Date timings here
+});
 ```
 
 Important headers: 
@@ -21,6 +22,9 @@ Account-Auth-Account: {{Username}}
 Account-Auth-ApiKey: {{Key}}
 ```
 
+You can check the XML comments for my extension method and the AccountInfo parameter, and you can use
+the source repository API as a sample usage. 
+
 ## SQL
 
 This SQL is a requirement for the Service to work properly. Since I'm using Dapper, you need 
@@ -28,11 +32,9 @@ a Postgres database with the following SQL tables:
 
 ```sql
 CREATE TABLE "HowlDev.User" (
-  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+  id UUID PRIMARY KEY,
   accountName varchar(200) UNIQUE NOT NULL, 
   passHash varchar(200) NOT NULL, 
-  email varchar(200) NULL, 
-  displayName varchar(80) NULL,
   role int NOT NULL
 );
 
@@ -53,15 +55,19 @@ A few more features are coming before I consider the library done.
 - Integration tests with the Docker Compose to run full auth flows
 	- Test throwing errors and what you should expect as a return value 
 - Move headers to standard `Authentication` header (for both libraries)
-    - AS OF 0.9 - My library works in a fundamentally different way, will not be migrating to this
+    - AS OF 0.9 - My library works in a fundamentally different way, will not be migrating to this for v1.x
 
 ## Changelog
+
+1.0 (!) (6/20/25)
+
+- Attempted writing some tests, will not worry about that for the .0 release. Check back in to the repo to check test status.
 
 0.9.0 (6/19/25)
 
 - BREAKING CHANGES
-	- Transferred DB to include UUID's instead of sequential ints 
-	- Otherwise simplified the database schema to only include necessities
+	- Changed DB to include UUID's instead of sequential ints 
+	- Otherwise simplified the database schema to only include necessities (and roles, I think roles are important)
 	- Entirely removed MiddlewareConfig interface, moved it to a new extension method for the app (see below)
 - Included a new class to more easily get auth information into your endpoints. Use the AccountInfo parameter!
 - Added a few AuthService methods to retrieve Role and Guid information
@@ -70,10 +76,22 @@ A few more features are coming before I consider the library done.
 How to use the new middleware setup: 
 
 ```csharp
-// Can also include Expiration timespans, Revalidation timespans, or Whitelist
 app.UseAccountIdentityMiddleware(options => {
-    options.Paths = ["/users", "/user", "/user/signin"];
+  options.Paths = ["/users", "/user", "/user/signin"];
+  options.Whitelist = "/data";
+  options.ExpirationDate = new TimeSpan(30, 0, 0, 0);
+  options.ReValidationDate = new TimeSpan(5, 0, 0, 0);
 });
+```
+
+Any option not configured has defaults, so you can remove the lambda entirely (though for various 
+reasons, I don't recommend doing that), or you can just configure the options you want. 
+
+Sample of the AccountInfo parameter for minimal endpoints: 
+
+```csharp
+app.MapGet("/user/guid", (AccountInfo info) => info.Guid);
+app.MapGet("/user/role", (AuthService service, AccountInfo info) => service.GetRole(info.AccountName));
 ```
 
 0.8.4 (5/19/25)

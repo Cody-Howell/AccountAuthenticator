@@ -12,22 +12,41 @@ re-enable them every so often so the user only has to sign in once.
 ## Features
 
 This library is primarily for locally-hosted, small projects. As of right now, I hold an account name (which must be 
-unique across all users), a password hash, and an optional display name and email. In the future, I might enable 
+unique across all users) and a password hash. In the future, I might enable 
 email-password-reset emails to be sent and generate an HTML page to show the user, but my primary solution 
 is that the Admin can reset their password to "password", then they can get back in and change their password. 
 
 Of course, I still have many of the features from the Email auth, with key re-enabling, single sign-out, global 
 sign-out, and validation checks. It should feel somewhat similar to that library, just using a different mechanism. 
 
+The middleware configuration was recently reconfigured to work in-line with the app, so you now write some lines like this
+to configure the middleware:
+
+```csharp
+app.UseAccountIdentityMiddleware(options => {
+  options.Paths = ["/users", "/user", "/user/signin"];
+  options.Whitelist = "/data";
+  options.ExpirationDate = new TimeSpan(30, 0, 0, 0);
+  options.ReValidationDate = new TimeSpan(5, 0, 0, 0);
+});
+```
+
+And an easier way of getting authentication information into your endpoints (to see who is making the request): 
+
+```csharp
+app.MapGet("/user/guid", (AccountInfo info) => info.Guid);
+app.MapGet("/user/role", (AuthService service, AccountInfo info) => service.GetRole(info.AccountName));
+```
+
+See also the readme in the NuGet [package description](https://www.nuget.org/packages/AccountAuthenticator). 
+
 ## Initial SQL
 
 ```sql
 CREATE TABLE "HowlDev.User" (
-  id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+  id UUID PRIMARY KEY,
   accountName varchar(200) UNIQUE NOT NULL, 
   passHash varchar(200) NOT NULL, 
-  email varchar(200) NULL, 
-  displayName varchar(80) NULL,
   role int NOT NULL
 );
 

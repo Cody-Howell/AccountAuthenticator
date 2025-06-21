@@ -1,11 +1,11 @@
 using AccountAuthenticator;
 using System.Data;
 using Npgsql;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connString = builder.Configuration["DOTNET_DATABASE_STRING"] ?? throw new InvalidOperationException("Connection string for database not found.");
+//var connString = builder.Configuration["DOTNET_DATABASE_STRING"] ?? throw new InvalidOperationException("Connection string for database not found.");
+var connString = "Host=localhost;Database=accountAuth;Username=cody;Password=123456abc;";
 Console.WriteLine("Connection String: " + connString);
 builder.Services.AddSingleton<IDbConnection>(provider => {
     return new NpgsqlConnection(connString);
@@ -15,9 +15,11 @@ builder.Services.AddSingleton<AuthService>();
 var app = builder.Build();
 
 app.UseAccountIdentityMiddleware(options => {
-    options.Paths = ["/users", "/user", "/user/signin"];
+    options.Paths = ["/users", "user", "/user/signin", "/health"];
 });
 app.UseRouting();
+
+app.MapGet("/health", () => "Hello");
 
 app.MapGet("/users", (AuthService service) => service.GetAllUsers());
 app.MapGet("/user", (AuthService service, string account) => service.GetUser(account));
@@ -63,3 +65,5 @@ app.MapDelete("/user/signout/global", (AuthService service, AccountInfo info) =>
 });
 
 app.Run();
+
+public partial class AuthProgram { }

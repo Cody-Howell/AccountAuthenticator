@@ -88,7 +88,7 @@ public class AuthService(IDbConnection conn) {
         try {
             string storedPassword = conn.QuerySingle<string>(pass, new { accountName });
             return storedPassword == hashedPassword;
-        } catch {
+        } catch (Exception e) {
             return false;
         }
     }

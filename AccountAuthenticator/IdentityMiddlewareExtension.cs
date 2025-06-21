@@ -22,6 +22,8 @@ public static class IdentityMiddlewareExtension {
     ///   options.ReValidationDate = new TimeSpan(5, 0, 0, 0);
     /// });
     /// </code>
+    /// Also enables the AccountInfo parameter, which is an encapsulation for username, key, and 
+    /// Guid of the incoming user. 
     /// </summary>
     public static IApplicationBuilder UseAccountIdentityMiddleware(this IApplicationBuilder app, Action<IDMiddlewareConfig>? configureOptions = null) {
     var options = new IDMiddlewareConfig();

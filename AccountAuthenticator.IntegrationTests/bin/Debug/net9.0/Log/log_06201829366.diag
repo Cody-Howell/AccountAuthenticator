@@ -1,0 +1,15 @@
+2025-06-20T18:30:29.3710838+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Version: 1.4.3+c252b64ad913ea9411fc5d17bfd5580d2d061497
+2025-06-20T18:30:29.3876541+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Logging mode: asynchronous
+2025-06-20T18:30:29.3885202+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Logging level: Information
+2025-06-20T18:30:29.3885243+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION CreateBuilderAsync entry time: 18:30:29.350
+2025-06-20T18:30:29.3899366+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION PID: 17300
+2025-06-20T18:30:29.3899661+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Runtime information: win-x64 - .NET 9.0.2
+2025-06-20T18:30:29.3899759+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Runtime location: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\9.0.2\System.Private.CoreLib.dll
+2025-06-20T18:30:29.3899823+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION IsDynamicCodeSupported: True
+2025-06-20T18:30:29.3899846+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Test module: C:\Users\Cody\myCodeDir\_Projects\Libraries\AccountAuthenticator\AccountAuthenticator.IntegrationTests\bin\Debug\net9.0\AccountAuthenticator.IntegrationTests.dll
+2025-06-20T18:30:29.3900571+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION Command line arguments: '--server --diagnostic --diagnostic-verbosity Information --diagnostic-output-directory C:\Users\Cody\myCodeDir\_Projects\Libraries\AccountAuthenticator\AccountAuthenticator.IntegrationTests\bin\Debug\net9.0\Log --results-directory C:\Users\Cody\myCodeDir\_Projects\Libraries\AccountAuthenticator\AccountAuthenticator.API\TestResults --client-port 65329'
+2025-06-20T18:30:29.3911026+00:00 Microsoft.Testing.Platform.Builder.TestApplication INFORMATION TESTINGPLATFORM_DEFAULT_HANG_TIMEOUT: ''
+2025-06-20T18:30:29.4024536+00:00 Microsoft.Testing.Platform.Hosts.TestHostBuilder INFORMATION Setting RegisterEnvironmentVariablesConfigurationSource: 'True'
+2025-06-20T18:30:29.4056994+00:00 Microsoft.Testing.Platform.Configurations.JsonConfigurationSource+JsonConfigurationProvider INFORMATION Config file 'C:\Users\Cody\myCodeDir\_Projects\Libraries\AccountAuthenticator\AccountAuthenticator.IntegrationTests\bin\Debug\net9.0\AccountAuthenticator.IntegrationTests.testconfig.json' not found.
+2025-06-20T18:30:29.4067167+00:00 Microsoft.Testing.Platform.Hosts.TestHostBuilder INFORMATION Setting PlatformExitProcessOnUnhandledException: 'False', config file: False environment variable:  VSTest mode: False
+2025-06-20T18:30:29.5161952+00:00 Microsoft.Testing.Platform.Requests.TestHostTestFrameworkInvoker INFORMATION Test framework UID: 'TUnitExtension' Version: '0.6.159.0' DisplayName: 'TUnit' Description: 'TUnit Framework for Microsoft Testing Platform'

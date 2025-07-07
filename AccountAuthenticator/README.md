@@ -55,9 +55,13 @@ A few more features are coming before I consider the library done.
 - Integration tests with the Docker Compose to run full auth flows
 	- Test throwing errors and what you should expect as a return value 
 - Move headers to standard `Authentication` header (for both libraries)
-    - AS OF 0.9 - My library works in a fundamentally different way, will not be migrating to this for v1.x
+    - AS OF 0.9 - My library works in a fundamentally different way, will not be migrating to this for v1.x. I need to actually learn how this works. 
 
 ## Changelog
+
+1.1 (7/6/25)
+
+- AccountInfo now includes Role property, making role checking much cleaner. Should've done this from the start.
 
 1.0 (!) (6/20/25)
 
@@ -91,7 +95,7 @@ Sample of the AccountInfo parameter for minimal endpoints:
 
 ```csharp
 app.MapGet("/user/guid", (AccountInfo info) => info.Guid);
-app.MapGet("/user/role", (AuthService service, AccountInfo info) => service.GetRole(info.AccountName));
+app.MapGet("/user/role", (AccountInfo info) => info.Role);
 ```
 
 0.8.4 (5/19/25)

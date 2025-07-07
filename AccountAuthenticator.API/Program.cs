@@ -15,7 +15,7 @@ builder.Services.AddSingleton<AuthService>();
 var app = builder.Build();
 
 app.UseAccountIdentityMiddleware(options => {
-    options.Paths = ["/users", "user", "/user/signin", "/health"];
+    options.Paths = ["/users", "/user", "/user/signin", "/health"];
 });
 app.UseRouting();
 
@@ -51,7 +51,7 @@ app.MapPatch("/user/role", (AuthService service, AccountInfo info, int newRole) 
 
 app.MapGet("/user/valid", () => Results.Ok());
 app.MapGet("/user/guid", (AccountInfo info) => info.Guid);
-app.MapGet("/user/role", (AuthService service, AccountInfo info) => service.GetRole(info.AccountName));
+app.MapGet("/user/role", (AccountInfo info) => info.Role);
 
 app.MapDelete("/user/signout", (AuthService service, AccountInfo info) => {
     service.KeySignOut(info.AccountName, info.ApiKey);

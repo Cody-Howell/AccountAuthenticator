@@ -1,8 +1,10 @@
 @AA = http://localhost:5133
 @Username = Cody
 @Password = password
-@Key = usUlWJ3FMjoiIBM_1sgC
+@Key = iPEalhsUoyR9cVNmtIom
 
+###
+GET {{AA}}/health
 ###
 GET {{AA}}/users
 ###

@@ -26,9 +26,9 @@ public static class IdentityMiddlewareExtension {
     /// Guid of the incoming user. 
     /// </summary>
     public static IApplicationBuilder UseAccountIdentityMiddleware(this IApplicationBuilder app, Action<IDMiddlewareConfig>? configureOptions = null) {
-    var options = new IDMiddlewareConfig();
-    configureOptions?.Invoke(options);
+        var options = new IDMiddlewareConfig();
+        configureOptions?.Invoke(options);
 
-    return app.UseMiddleware<IdentityMiddleware>(options);
-}
+        return app.UseMiddleware<IdentityMiddleware>(options);
+    }
 }

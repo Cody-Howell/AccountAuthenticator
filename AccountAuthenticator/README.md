@@ -1,7 +1,9 @@
 # AccountAuthenticator
 
-This authenticator provides a few interfaces, an AuthService, and an IdentityMiddleware. This is a 
-similarly naive authenticator that handles an account/password combo, but works in essentially the 
+Read the docs [at this link](https://wiki.codyhowell.dev/accountauth).
+
+This authenticator provides an AuthService, an IdentityMiddleware, and some helpful parameters and extensions 
+for minimalAPIs. This is a similarly naive authenticator that handles an account/password combo, but works in essentially the 
 same way as the EmailAuthenticator. 
 
 Recommended API layout in `Program.cs`: 
@@ -12,7 +14,7 @@ builder.Services.AddSingleton<AuthService>();
 var app = builder.Build();
 
 app.UseAccountIdentityMiddleware(options => {
-    // Apply Path, Whitelist, or Date timings here
+    // Apply Path, Whitelist, or Timespan objects here
 });
 ```
 
@@ -55,9 +57,25 @@ A few more features are coming before I consider the library done.
 - Integration tests with the Docker Compose to run full auth flows
 	- Test throwing errors and what you should expect as a return value 
 - Move headers to standard `Authentication` header (for both libraries)
-    - AS OF 0.9 - My library works in a fundamentally different way, will not be migrating to this for v1.x. I need to actually learn how this works. 
+    - AS OF 0.9 - My library works in a fundamentally different way, will not be migrating to this for v1.x. I need to actually learn how this works/consider if I want this library to work like that. 
 
 ## Changelog
+
+1.2 (7/7/25)
+
+- AuthService new Accounts now have a place to set a default Role number. 
+- Generated a number of Endpoint filters to help with clean authorization. A few code examples will be provided below (see wiki for more). 
+- IdentityMiddleware now passes the Account through `HttpContext.Items`.
+- .csproj has removed the "Microsoft.AspNetCore.Http" reference in favor of the "Microsoft.AspNetCore.App" framework
+
+```csharp
+app.MapGet(...).RequireRoleIsEqualTo(3);
+app.MapGet(...).RequireRoleIsGreaterThan(2, HttpStatusCode.Forbidden);
+app.MapGet(...).RequireRoleIsLessThan(4, 403);
+app.MapGet(...).RequireRoleIs(i => i > 4); // Obviously this function can be done in other ways, but this shows how it can work.
+```
+
+These could also be used as simpler methods to return custom error codes depending on the role of the user. 
 
 1.1 (7/6/25)
 

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AccountAuthenticator.IntegrationTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+827505bfcda593c106d8dcb95ab45a4501827bb0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4f84f22abb128bca5dfbfccb377b936f1444c6d1")]
 [assembly: System.Reflection.AssemblyProductAttribute("AccountAuthenticator.IntegrationTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AccountAuthenticator.IntegrationTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

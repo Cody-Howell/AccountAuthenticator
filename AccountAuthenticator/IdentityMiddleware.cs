@@ -41,6 +41,7 @@ public class IdentityMiddleware(RequestDelegate next, AuthService service, IDMid
                 Account acc = service.GetUser(account);
                 context.Items["Guid"] = acc.Id;
                 context.Items["Role"] = acc.Role;
+                context.Items["Account"] = account;
             } 
             catch {
                 context.Response.StatusCode = 401;

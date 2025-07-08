@@ -1,7 +1,7 @@
 @AA = http://localhost:5133
 @Username = Cody
 @Password = password
-@Key = iPEalhsUoyR9cVNmtIom
+@Key = pTmdxoeQ2UV!9X4GUzgT
 
 ###
 GET {{AA}}/health
@@ -54,3 +54,8 @@ DELETE {{AA}}/user/signout/global
 Account-Auth-Account: {{Username}}
 Account-Auth-ApiKey: {{Key}}
 ###
+
+# Filter testing
+GET {{AA}}/filters/stringis
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}

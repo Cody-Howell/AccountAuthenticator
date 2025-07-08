@@ -1,6 +1,7 @@
 using AccountAuthenticator;
 using System.Data;
 using Npgsql;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,16 @@ app.MapDelete("/user/signout/global", (AuthService service, AccountInfo info) =>
 
     return Results.Accepted();
 });
+
+app.MapGet("/filters/et", () => Results.Ok()).RequireRoleIsEqualTo(3);
+app.MapGet("/filters/gt", () => Results.Ok()).RequireRoleIsGreaterThan(1);
+app.MapGet("/filters/lt", () => Results.Ok()).RequireRoleIsLessThan(10, HttpStatusCode.Forbidden);
+app.MapGet("/filters/gte", () => Results.Ok()).RequireRoleIsGreaterThanOrEqualTo(3);
+app.MapGet("/filters/lte", () => Results.Ok()).RequireRoleIsLessThanOrEqualTo(3, 423);
+app.MapGet("/filters/custom", () => Results.Ok()).RequireRoleIs(i => i % 3 == 0);
+
+app.MapGet("/filters/string", () => Results.Ok()).RequireAccountNameIsEqualTo("Cody");
+app.MapGet("/filters/stringis", () => Results.Ok()).RequireAccountNameIs(s => s.Length < 3);
 
 app.Run();
 

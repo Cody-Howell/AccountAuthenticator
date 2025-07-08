@@ -1,27 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <TargetFramework>net9.0</TargetFramework>
-	  <Version>1.1</Version>
-	  <Authors>Howl Dev</Authors>
-	  <Description>A naive Account/Password auth package with a service and middleware for an API.</Description>
-	  <PackageTags>auth</PackageTags>
-	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <RepositoryUrl>https://github.com/Cody-Howell/AccountAuthenticator</RepositoryUrl>
-	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <PackageIcon>_HowlDevLogo.png</PackageIcon>
-	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	  <ImplicitUsings>enable</ImplicitUsings>
-	  <Nullable>enable</Nullable>
-	  <IncludeSymbols>true</IncludeSymbols>
-	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Version>1.2</Version>
+		<Authors>Howl Dev</Authors>
+		<Description>A naive Account/Password auth package with a service and middleware for an API.</Description>
+		<PackageTags>auth</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/Cody-Howell/AccountAuthenticator</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>_HowlDevLogo.png</PackageIcon>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
 
-  <ItemGroup>
-	<None Include="README.md" Pack="true" PackagePath="./README.md" />
-	<None Include="_HowlDevLogo.png" Pack="true" PackagePath=""/>
-    <PackageReference Include="Dapper" Version="2.1.66" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="./README.md" />
+		<None Include="_HowlDevLogo.png" Pack="true" PackagePath="" />
+		<PackageReference Include="Dapper" Version="2.1.66" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
 </Project>

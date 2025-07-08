@@ -16,12 +16,12 @@ public class AuthService(IDbConnection conn) {
     /// only be used in the sign-up process.
     /// </summary>
     /// <exception cref="ArgumentException"></exception>
-    public void AddUser(string accountName, string defaultPassword = "password") {
+    public void AddUser(string accountName, string defaultPassword = "password", int defaultRole = 0) {
         string passHash = StringHelper.CustomHash(defaultPassword);
         Guid guid = Guid.NewGuid();
-        var AddUser = "insert into \"HowlDev.User\" values (@guid, @accountName, @passHash, 0)";
+        var AddUser = "insert into \"HowlDev.User\" values (@guid, @accountName, @passHash, @defaultRole)";
         try {
-            conn.Execute(AddUser, new { guid, accountName, passHash });
+            conn.Execute(AddUser, new { guid, accountName, passHash, defaultRole });
         } catch {
             throw new ArgumentException("Account name already exists.");
         }
@@ -68,7 +68,7 @@ public class AuthService(IDbConnection conn) {
     /// You can decide whether or not the returned date is valid (if you want expiration dates). 
     /// Throws an exception if no API key exists in the table. 
     /// </summary>
-    /// <param name="email">Email address used</param>
+    /// <param name="accountName">Account used</param>
     /// <param name="key">API Key</param>
     /// <returns>Null or DateTime</returns>
     /// <exception cref="Exception"></exception>
@@ -88,7 +88,7 @@ public class AuthService(IDbConnection conn) {
         try {
             string storedPassword = conn.QuerySingle<string>(pass, new { accountName });
             return storedPassword == hashedPassword;
-        } catch (Exception e) {
+        } catch {
             return false;
         }
     }

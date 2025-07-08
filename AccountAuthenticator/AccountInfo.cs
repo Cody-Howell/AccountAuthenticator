@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.Data;
 using System.Reflection;
 
 namespace AccountAuthenticator;
@@ -44,8 +43,8 @@ public class AccountInfo {
         if (!context.Request.Headers.TryGetValue("Account-Auth-ApiKey", out var apiKey)) {
             throw new Exception("Should not appear, should be caught in Identity Middleware - key");
         }
-        Guid guid = (Guid)context.Items["Guid"];
-        int role = (int)context.Items["Role"];
+        Guid guid = (Guid)context.Items["Guid"]!;
+        int role = (int)context.Items["Role"]!;
 
         return ValueTask.FromResult(new AccountInfo(accountName!, apiKey!, guid, role));
     }

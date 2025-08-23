@@ -6,11 +6,9 @@ using System.Net;
 var builder = WebApplication.CreateBuilder(args);
 
 //var connString = builder.Configuration["DOTNET_DATABASE_STRING"] ?? throw new InvalidOperationException("Connection string for database not found.");
-var connString = "Host=localhost;Database=accountAuth;Username=cody;Password=123456abc;";
-Console.WriteLine("Connection String: " + connString);
-builder.Services.AddSingleton<IDbConnection>(provider => {
-    return new NpgsqlConnection(connString);
-});
+//var connString = "Host=localhost;Database=accountAuth;Username=cody;Password=123456abc;";
+//Console.WriteLine("Connection String: " + connString);
+builder.Services.AddSingleton<DbConnector>();
 builder.Services.AddSingleton<AuthService>();
 
 var app = builder.Build();
@@ -22,31 +20,31 @@ app.UseRouting();
 
 app.MapGet("/health", () => "Hello");
 
-app.MapGet("/users", (AuthService service) => service.GetAllUsers());
-app.MapGet("/user", (AuthService service, string account) => service.GetUser(account));
-app.MapPost("/user", (AuthService service, string accountName) => {
+app.MapGet("/users", async (AuthService service) => await service.GetAllUsersAsync());
+app.MapGet("/user", async (AuthService service, string account) => await service.GetUserAsync(account));
+app.MapPost("/user", async (AuthService service, string accountName) => {
     try {
-        service.AddUser(accountName);
+        await service.AddUserAsync(accountName);
         return Results.Created();
     } catch (Exception e) {
         return Results.BadRequest(e.Message);
     }
 });
 
-app.MapPost("/user/signin", (AuthService service, SignIn obj) => {
-    if (service.IsValidUserPass(obj.user, obj.pass)) {
-        return Results.Ok(service.NewSignIn(obj.user));
+app.MapPost("/user/signin", async (AuthService service, SignIn obj) => {
+    if (await service.IsValidUserPassAsync(obj.user, obj.pass)) {
+        return Results.Ok(await service.NewSignInAsync(obj.user));
     } else {
         return Results.BadRequest("Invalid Account/Password combo.");
     }
 });
 
-app.MapPatch("/user", (AuthService service, SignIn obj) => {
-    service.UpdatePassword(obj.user, obj.pass);
+app.MapPatch("/user", async (AuthService service, SignIn obj) => {
+    await service.UpdatePasswordAsync(obj.user, obj.pass);
     return Results.Ok();
 });
-app.MapPatch("/user/role", (AuthService service, AccountInfo info, int newRole) => {
-    service.UpdateRole(info.AccountName, newRole);
+app.MapPatch("/user/role", async (AuthService service, AccountInfo info, int newRole) => {
+    await service.UpdateRoleAsync(info.AccountName, newRole);
     return Results.Ok();
 });
 
@@ -54,13 +52,13 @@ app.MapGet("/user/valid", () => Results.Ok());
 app.MapGet("/user/guid", (AccountInfo info) => info.Guid);
 app.MapGet("/user/role", (AccountInfo info) => info.Role);
 
-app.MapDelete("/user/signout", (AuthService service, AccountInfo info) => {
-    service.KeySignOut(info.AccountName, info.ApiKey);
+app.MapDelete("/user/signout", async (AuthService service, AccountInfo info) => {
+    await service.KeySignOutAsync(info.AccountName, info.ApiKey);
 
     return Results.Accepted();
 });
-app.MapDelete("/user/signout/global", (AuthService service, AccountInfo info) => {
-    service.GlobalSignOut(info.AccountName);
+app.MapDelete("/user/signout/global", async (AuthService service, AccountInfo info) => {
+    await service.GlobalSignOutAsync(info.AccountName);
 
     return Results.Accepted();
 });

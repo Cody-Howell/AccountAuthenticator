@@ -7,8 +7,7 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5133",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "DOTNET_DATABASE_STRING": "Host=localhost;Database=accountAuth;Username=cody;Password=123456abc;"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

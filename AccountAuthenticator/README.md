@@ -56,10 +56,42 @@ but this is what's required to make my auth work.
 A few more features are coming before I consider the library done. 
 - Integration tests with the Docker Compose to run full auth flows
 	- Test throwing errors and what you should expect as a return value 
-- Move headers to standard `Authentication` header (for both libraries)
-    - AS OF 0.9 - My library works in a fundamentally different way, will not be migrating to this for v1.x. I need to actually learn how this works/consider if I want this library to work like that. 
+- Endpoint filters that take place of IdentityMiddleware for projects that only need to secure a few endpoints
+    - This includes extracting that logic into an external class, which could be read by you as well
+- A default map for signin, signout, and change password (this may be expanded later)
+    - Ex. mapping some default (optional) GET and POST requests to keep them out of your way
+    - This would include both a C# and JS client package for immediate usage in Blazor (C#) and any JS app
+- Change AuthService implementation to: 
+    - Enable/disable caching of roles and GUID
+    - Write code to enable/disable caching of API keys
+    - Instead of adjusting cache directly, should just invalidate it
+    - This would include a rewrite of the singleton registration to match the `UseAccountIdentityMiddleware` function
+    - (with long-term-planning 1 below): set a TimeSpan which will clear the cache asynchronously
+
+For items in long-term storage: 
+
+- LONG-TERM PLANNING
+    1. Dictionary caching limit, where you can specify a size to keep the dictionary to and it will manage the number of items. This would take a significant amount of memory and computation when something needed to be deleted, but for larger projects, it would be better than allowing the dictionaries to go to infinity. 
+        - This would be specified per-cache (mostly), so I would have one for Roles and GUID (since they are always called at the same time for the same account), and one for each Key. 
+    1. Account Name Switching. Currently, there are no functions to allow you to change the account name. One could be written that checks if the account name is already in use, and if not, allows you to change a user given the GUID. This should also invalidate all cache related to that account name.
 
 ## Changelog
+
+2.0 - Alpha (8/22/25)
+
+Version 2 came much faster than I wanted. 
+
+I started to actually use this in a project. I was building an SPA and I generated a few items that 
+made concurrent calls to the API. The AuthService broke because the connection was trying to be 
+shared, and after many discussions with ChatGPT (and internal crying), I built this Alpha version 
+to test. All AuthService method names and return types have been adjusted to be async. 
+
+It includes a `DbConnector` class to inject and get new async managed connections. We will see if 
+this fixes everything; assuming so, for the final release of 2.0, I will try and figure out non-async 
+methods. 
+
+This no longer requires an `IDbConnection` DI injection, but it looks like all other notes above 
+maintain. I'll adjust those with version-specific updates once 2.0 comes out in full release. 
 
 1.2 (7/7/25)
 

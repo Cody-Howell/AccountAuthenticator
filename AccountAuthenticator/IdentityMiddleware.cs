@@ -38,7 +38,7 @@ public class IdentityMiddleware(RequestDelegate next, AuthService service, IDMid
             }
 
             try {
-                Account acc = service.GetUser(account);
+                Account acc = await service.GetUserAsync(account);
                 context.Items["Guid"] = acc.Id;
                 context.Items["Role"] = acc.Role;
                 context.Items["Account"] = account;
@@ -52,7 +52,7 @@ public class IdentityMiddleware(RequestDelegate next, AuthService service, IDMid
 
             DateTime? output;
             try {
-                output = service.IsValidApiKey(account, key);
+                output = await service.IsValidApiKeyAsync(account, key);
             } catch {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("API key does not exist.");
@@ -69,13 +69,13 @@ public class IdentityMiddleware(RequestDelegate next, AuthService service, IDMid
             if (timeBetween < config.ExpirationDate) {
                 if (config.ReValidationDate is not null &&
                     timeBetween > config.ReValidationDate) {
-                    service.ReValidate(account, key);
+                    await service.ReValidateAsync(account, key);
                 }
 
                 await next(context);
             } else {
                 // Explicit cast removes the null check that's completed above
-                service.ExpiredKeySignOut((TimeSpan)config.ExpirationDate);
+                await service.ExpiredKeySignOutAsync((TimeSpan)config.ExpirationDate);
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("Time has run out. Please sign in again.");
             }

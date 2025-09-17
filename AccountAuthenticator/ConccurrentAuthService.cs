@@ -1,23 +1,12 @@
 ﻿using Dapper;
-using Microsoft.Extensions.Configuration;
-using System.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace AccountAuthenticator;
-
-/// <summary>
-/// Service implementation to handle the database. Runs through Dapper.
-/// </summary>
 public partial class AuthService {
-    private Dictionary<string, Guid> guidLookup = new();
-    private Dictionary<string, int> roleLookup = new();
-    private DbConnector conn;
-
-    /// <summary>
-    /// Do not call this directly. Use the DI container. 
-    /// </summary>
-    public AuthService(IConfiguration config) {
-        conn = new DbConnector(config);
-    }
 
     #region User Creation/Validation
     /// <summary>
@@ -25,13 +14,13 @@ public partial class AuthService {
     /// only be used in the sign-up process.
     /// </summary>
     /// <exception cref="ArgumentException"></exception>
-    public Task AddUserAsync(string accountName, string defaultPassword = "password", int defaultRole = 0) =>
-        conn.WithConnectionAsync(async conn => {
+    public void AddUser(string accountName, string defaultPassword = "password", int defaultRole = 0) =>
+        conn.WithConnection(conn => {
             string passHash = StringHelper.CustomHash(defaultPassword);
             Guid guid = Guid.NewGuid();
             var AddUser = "insert into \"HowlDev.User\" values (@guid, @accountName, @passHash, @defaultRole)";
             try {
-                await conn.ExecuteAsync(AddUser, new { guid, accountName, passHash, defaultRole });
+                conn.Execute(AddUser, new { guid, accountName, passHash, defaultRole });
             } catch {
                 throw new ArgumentException("Account name already exists.");
             }
@@ -42,13 +31,13 @@ public partial class AuthService {
     /// Adds a new line to the API key table.
     /// </summary>
     /// <returns>API key</returns>
-    public Task<string> NewSignInAsync(string accountName) =>
-        conn.WithConnectionAsync(async conn => {
+    public string NewSignIn(string accountName) =>
+        conn.WithConnection(conn => {
             string newApiKey = StringHelper.GenerateRandomString(20);
             DateTime now = DateTime.Now;
 
             var addValidation = "insert into \"HowlDev.Key\" (accountId, apiKey, validatedOn) values (@accountName, @newApiKey, @now)";
-            await conn.ExecuteAsync(addValidation, new { accountName, newApiKey, now });
+            conn.Execute(addValidation, new { accountName, newApiKey, now });
 
             return newApiKey;
         }
@@ -58,11 +47,11 @@ public partial class AuthService {
     /// <c>For Debug Only</c>, I wouldn't reccommend assigning this an endpoint. Returns all users sorted by 
     /// ID. 
     /// </summary>
-    public Task<IEnumerable<Account>> GetAllUsersAsync() =>
-        conn.WithConnectionAsync(async conn => {
+    public IEnumerable<Account> GetAllUsers() =>
+        conn.WithConnection(conn => {
             var GetUsers = "select p.id, p.accountName, p.role from \"HowlDev.User\" p";
             try {
-                return await conn.QueryAsync<Account>(GetUsers);
+                return conn.Query<Account>(GetUsers);
             } catch {
                 return [];
             }
@@ -72,12 +61,12 @@ public partial class AuthService {
     /// <summary>
     /// Returns the user object from the given account. Throws an exception if the user does not exist.
     /// </summary>
-    public Task<Account> GetUserAsync(string account) =>
-        conn.WithConnectionAsync(async conn => {
+    public Account GetUser(string account) =>
+        conn.WithConnection(conn => {
             return new Account {
-                Id = await GetGuidAsync(account),
+                Id = GetGuid(account),
                 AccountName = account,
-                Role = await GetRoleAsync(account)
+                Role = GetRole(account)
             };
         }
     );
@@ -92,10 +81,10 @@ public partial class AuthService {
     /// <param name="key">API Key</param>
     /// <returns>Null or DateTime</returns>
     /// <exception cref="Exception"></exception>
-    public Task<DateTime> IsValidApiKeyAsync(string accountName, string key) =>
-        conn.WithConnectionAsync(async conn => {
+    public DateTime IsValidApiKey(string accountName, string key) =>
+        conn.WithConnection(conn => {
             var validKey = "select k.validatedon from \"HowlDev.Key\" k where accountId = @accountName and apiKey = @key";
-            return await conn.QuerySingleAsync<DateTime>(validKey, new { accountName, key });
+            return conn.QuerySingle<DateTime>(validKey, new { accountName, key });
         }
     );
 
@@ -104,12 +93,12 @@ public partial class AuthService {
     /// handles errors thrown by invalid users and simply returns False.
     /// </summary>
     /// <returns>If the hashed password equals the stored hash</returns>
-    public Task<bool> IsValidUserPassAsync(string accountName, string password) =>
-        conn.WithConnectionAsync(async conn => {
+    public bool IsValidUserPass(string accountName, string password) =>
+        conn.WithConnection(conn => {
             string hashedPassword = StringHelper.CustomHash(password);
             var pass = "select p.passHash from \"HowlDev.User\" p where accountName = @accountName";
             try {
-                string storedPassword = await conn.QuerySingleAsync<string>(pass, new { accountName });
+                string storedPassword = conn.QuerySingle<string>(pass, new { accountName });
                 return storedPassword == hashedPassword;
             } catch {
                 return false;
@@ -122,11 +111,11 @@ public partial class AuthService {
     /// signed-in users to continue being signed in on their key. It's primarily 
     /// used by my IdentityMiddleware and not recommended you use it on its own.
     /// </summary>
-    public Task ReValidateAsync(string accountId, string key) =>
-        conn.WithConnectionAsync(async conn => {
+    public void ReValidate(string accountId, string key) =>
+        conn.WithConnection(conn => {
             string time = DateTime.Now.ToUniversalTime().ToString("u");
             var validate = $"update \"HowlDev.Key\" hdk set validatedon = '{time}' where accountId = @accountId and apiKey = @key";
-            await conn.ExecuteAsync(validate, new { accountId, key });
+            conn.Execute(validate, new { accountId, key });
         }
     );
     #endregion
@@ -136,11 +125,11 @@ public partial class AuthService {
     /// Updates the user's password in the table. Does not affect any of the API keys currently
     /// entered. 
     /// </summary>
-    public Task UpdatePasswordAsync(string accountName, string newPassword) =>
-        conn.WithConnectionAsync(async conn => {
+    public void UpdatePassword(string accountName, string newPassword) =>
+        conn.WithConnection(conn => {
             string newHash = StringHelper.CustomHash(newPassword);
             var pass = "update \"HowlDev.User\" p set passHash = @newHash where accountName = @accountName";
-            await conn.ExecuteAsync(pass, new { accountName, newHash });
+            conn.Execute(pass, new { accountName, newHash });
         }
     );
 
@@ -148,10 +137,10 @@ public partial class AuthService {
     /// Updates the user's role in the table. Does not affect any current keys.
     /// Does update the lookup dictionary with the new role. 
     /// </summary>
-    public Task UpdateRoleAsync(string accountName, int newRole) =>
-        conn.WithConnectionAsync(async conn => {
+    public void UpdateRole(string accountName, int newRole) =>
+        conn.WithConnection(conn => {
             var role = "update \"HowlDev.User\" p set role = @newRole where accountName = @accountName";
-            await conn.ExecuteAsync(role, new { accountName, newRole });
+            conn.Execute(role, new { accountName, newRole });
             roleLookup[accountName] = newRole;
         }
     );
@@ -161,12 +150,12 @@ public partial class AuthService {
     /// <summary>
     /// Deletes all sign-in records by the user and their place in the User table.
     /// </summary>
-    public Task DeleteUserAsync(string accountId) =>
-        conn.WithConnectionAsync(async conn => {
-            await GlobalSignOutAsync(accountId);
+    public void DeleteUser(string accountId) =>
+        conn.WithConnection(conn => {
+            GlobalSignOut(accountId);
 
             var removeUser = "delete from \"HowlDev.User\" where accountName = @accountId";
-            await conn.ExecuteAsync(removeUser, new { accountId });
+            conn.Execute(removeUser, new { accountId });
         }
     );
 
@@ -174,31 +163,31 @@ public partial class AuthService {
     /// Signs a user out globally (all keys are deleted), such as in the instance 
     /// of someone else gaining access to their account.
     /// </summary>
-    public Task GlobalSignOutAsync(string accountId) =>
-        conn.WithConnectionAsync(async conn => {
+    public void GlobalSignOut(string accountId) =>
+        conn.WithConnection(conn => {
             var removeKeys = "delete from \"HowlDev.Key\" where accountId = @accountId";
-            await conn.ExecuteAsync(removeKeys, new { accountId });
+            conn.Execute(removeKeys, new { accountId });
         }
     );
 
     /// <summary>
     /// Sign out on an individual device by passing the key you want signed out. 
     /// </summary>
-    public Task KeySignOutAsync(string accountId, string key) =>
-        conn.WithConnectionAsync(async conn => {
+    public void KeySignOut(string accountId, string key) =>
+        conn.WithConnection(conn => {
             var removeKey = "delete from \"HowlDev.Key\" where accountId = @accountId and apiKey = @key";
-            await conn.ExecuteAsync(removeKey, new { accountId, key });
+            conn.Execute(removeKey, new { accountId, key });
         }
     );
 
     /// <summary>
     /// Given the TimeSpan, remove keys from any user that are older than that length.
     /// </summary>
-    public Task ExpiredKeySignOutAsync(TimeSpan length) =>
-        conn.WithConnectionAsync(async conn => {
+    public void ExpiredKeySignOut(TimeSpan length) =>
+        conn.WithConnection(conn => {
             DateTime expirationTime = DateTime.Now - length;
             var removeKey = "delete from \"HowlDev.Key\" where validatedOn < @expirationTime";
-            await conn.ExecuteAsync(removeKey, new { expirationTime });
+            conn.Execute(removeKey, new { expirationTime });
         }
     );
     #endregion
@@ -208,13 +197,13 @@ public partial class AuthService {
     /// Returns the Guid of a given account name. Has an internal dictionary to reduce 
     /// database calls and enable quick lookup.
     /// </summary>
-    public Task<Guid> GetGuidAsync(string account) =>
-        conn.WithConnectionAsync(async conn => {
+    public Guid GetGuid(string account) =>
+        conn.WithConnection(conn => {
             if (guidLookup.ContainsKey(account)) {
                 return guidLookup[account];
             } else {
                 string guid = "select id from \"HowlDev.User\" where accountName = @account";
-                Guid theirGuid = await conn.QuerySingleAsync<Guid>(guid, new { account });
+                Guid theirGuid = conn.QuerySingle<Guid>(guid, new { account });
                 guidLookup.Add(account, theirGuid);
                 return theirGuid;
             }
@@ -225,13 +214,13 @@ public partial class AuthService {
     /// Returns the Role of a given account name. Has an internal dictionary to reduce database calls
     /// and enable quick lookups. 
     /// </summary>
-    public Task<int> GetRoleAsync(string account) =>
-        conn.WithConnectionAsync(async conn => {
+    public int GetRole(string account) =>
+        conn.WithConnection(conn => {
             if (roleLookup.ContainsKey(account)) {
                 return roleLookup[account];
             } else {
                 string role = "select role from \"HowlDev.User\" where accountName = @account";
-                int theirRole = await conn.QuerySingleAsync<int>(role, new { account });
+                int theirRole = conn.QuerySingle<int>(role, new { account });
                 roleLookup.Add(account, theirRole);
                 return theirRole;
             }
@@ -241,10 +230,10 @@ public partial class AuthService {
     /// <summary>
     /// Retrieves the current number of sessions for a given user. 
     /// </summary>
-    public Task<int> GetCurrentSessionCountAsync(string account) =>
-        conn.WithConnectionAsync(async conn => {
+    public int GetCurrentSessionCount(string account) =>
+        conn.WithConnection(conn => {
             string connCount = "select count(*) from \"HowlDev.Key\" where accountId = @account";
-            return await conn.QuerySingleAsync<int>(connCount, new { account });
+            return conn.QuerySingle<int>(connCount, new { account });
         });
     #endregion
 }

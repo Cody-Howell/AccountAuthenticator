@@ -14,7 +14,7 @@ builder.Services.AddSingleton<AuthService>();
 var app = builder.Build();
 
 app.UseAccountIdentityMiddleware(options => {
-    // Apply Path, Whitelist, or Timespan objects here
+    // Apply Path, Whitelist, Timespan, or Logging objects here
 });
 ```
 
@@ -76,6 +76,26 @@ For items in long-term storage:
     1. Account Name Switching. Currently, there are no functions to allow you to change the account name. One could be written that checks if the account name is already in use, and if not, allows you to change a user given the GUID. This should also invalidate all cache related to that account name.
 
 ## Changelog
+
+2.0.1 (9/17/25)
+
+Added a GetCurrentSessionCount method to get the current number of keys (not entirely validated) in the table. 
+
+Also of note, the non-Async methods have not been as thoroughly tested as the Async methods. 
+
+2.0 (9/10/25)
+
+A few additional features have been added. The middleware configuration now has a Logging 
+system, turned off by default. There is an internal (but accessible) class called DbConnector which 
+helps encapsulate Dapper queries correctly. 
+
+The AuthService now has Async and sync methods by default. I believe logging will be added to that 
+at a future time as well, maybe with it's own configuration system. 
+
+Please see the docs (and scroll to the bottom) for new version 2.0 functions and more specificity. 
+
+This is still under test and subject to be bugfixed within the next few weeks of release. We're using 
+it in a current project and hopefully will run into all the problems ourselves. 
 
 2.0 - Alpha (8/22/25)
 

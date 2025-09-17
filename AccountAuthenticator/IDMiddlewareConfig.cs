@@ -29,4 +29,9 @@ public class IDMiddlewareConfig {
     /// valid, reset the expiration date for their API key. 
     /// </summary>
     public TimeSpan? ReValidationDate { get; set; } = null;
+    /// <summary>
+    /// Enables all levels of Traces, Debug, Information, and Error 
+    /// in the IdentityMiddleware. Set different logging levels in appsettings.json.
+    /// </summary>
+    public bool EnableLogging { get; set; } = false;
 }

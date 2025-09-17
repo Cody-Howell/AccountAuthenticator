@@ -56,4 +56,37 @@ public class DbConnector {
         await using var conn = new NpgsqlConnection(_connectionString);
         await action(conn);
     }
+
+    /// <summary>
+    /// This method has a return type. It's designed to write methods like properties: 
+    /// <code>
+    /// public Account GetUser(string account) =>
+    ///     conn.WithConnection(conn => {
+    ///         var GetUsers = "select p.id, p.accountName, p.role from \"HowlDev.User\" p where accountName = @account";
+    ///         return conn.QuerySingle&lt;Account&gt;(GetUsers, new { account });
+    ///     }
+    /// );
+    /// </code>
+    /// </summary>
+    public T WithConnection<T>(Func<NpgsqlConnection, T> action) {
+        using var conn = new NpgsqlConnection(_connectionString);
+        return action(conn);
+    }
+
+    /// <summary>
+    /// This method does not have a return type. 
+    /// It's designed to write methods like properties: 
+    /// <code>
+    /// public void GlobalSignOut(string accountId) =>
+    ///     conn.WithConnection(conn => {
+    ///         var removeKeys = "delete from \"HowlDev.Key\" where accountId = @accountId";
+    ///         conn.Execute(removeKeys, new { accountId });
+    ///     }
+    /// );
+    /// </code>
+    /// </summary>
+    public void WithConnection(Action<NpgsqlConnection> action) {
+        using var conn = new NpgsqlConnection(_connectionString);
+        action(conn);
+    }
 }

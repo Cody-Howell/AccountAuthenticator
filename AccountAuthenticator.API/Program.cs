@@ -8,20 +8,25 @@ var builder = WebApplication.CreateBuilder(args);
 //var connString = builder.Configuration["DOTNET_DATABASE_STRING"] ?? throw new InvalidOperationException("Connection string for database not found.");
 //var connString = "Host=localhost;Database=accountAuth;Username=cody;Password=123456abc;";
 //Console.WriteLine("Connection String: " + connString);
-builder.Services.AddSingleton<DbConnector>();
+//builder.Services.AddSingleton<DbConnector>();
 builder.Services.AddSingleton<AuthService>();
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
 app.UseAccountIdentityMiddleware(options => {
     options.Paths = ["/users", "/user", "/user/signin", "/health"];
+    //options.ExpirationDate = new TimeSpan(1, 0, 0, 0);
+    //options.EnableLogging = true;
 });
+
 app.UseRouting();
 
 app.MapGet("/health", () => "Hello");
 
 app.MapGet("/users", async (AuthService service) => await service.GetAllUsersAsync());
-app.MapGet("/user", async (AuthService service, string account) => await service.GetUserAsync(account));
+app.MapGet("/user/exact", async (AuthService service, string account) => await service.GetUserAsync(account));
+app.MapGet("/user/count", async (AuthService service, string account) => await service.GetCurrentSessionCountAsync(account)); 
 app.MapPost("/user", async (AuthService service, string accountName) => {
     try {
         await service.AddUserAsync(accountName);

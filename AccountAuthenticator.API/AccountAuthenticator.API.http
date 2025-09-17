@@ -1,14 +1,14 @@
 @AA = http://localhost:5133
 @Username = Cody
-@Password = lorem
-@Key = YtngwTYlID1gK1BSrAxM
+@Password = password
+@Key = McUXtg6okrhSd_1Lqbwr
 
 ###
 GET {{AA}}/health
 ###
 GET {{AA}}/users
 ###
-GET {{AA}}/user?account=Cody
+GET {{AA}}/user/exact?account=Cody
 Account-Auth-Account: {{Username}}
 Account-Auth-ApiKey: {{Key}}
 ###
@@ -30,6 +30,10 @@ Account-Auth-Account: {{Username}}
 Account-Auth-ApiKey: {{Key}}
 ###
 GET {{AA}}/user/role
+Account-Auth-Account: {{Username}}
+Account-Auth-ApiKey: {{Key}}
+###
+GET {{AA}}/user/count?account=Cody
 Account-Auth-Account: {{Username}}
 Account-Auth-ApiKey: {{Key}}
 #### Enables password change

@@ -77,6 +77,24 @@ For items in long-term storage:
 
 ## Changelog
 
+3.0 - Beta (9/18/25)
+
+Version 3 came *way* faster than I wanted. I'll be sitting in beta for a few months so I reduce the chance 
+of me spamming major versions. I intended to keep it low..
+
+I need to change major versions because I need to update the SQL for initialization. I knew that I should for some time, but 
+our project has determined that we need salted hashes for the password values. I already have the tools needed to implement 
+it, but I just.. didn't, for the major version I implemented a week ago. 
+
+As mentioned, I'll be in beta (and likely releasing bug-fix versions whenever we need an update), then once we've been using
+it for long enough, I imagine I can release a more complete version 3.0. 
+
+The goals I intend to complete are listed above in the **Upcoming Features** heading. They will be moved out of there into the bugfix patches whenever I complete a new version. Below are the ones I've done for this version. 
+
+- Salted hashes (Invalidates all prior hashes in a table)
+- Removed some features of String Helper
+- Added minor logging to the three async Search functions 
+
 2.0.1 (9/17/25)
 
 Added a GetCurrentSessionCount method to get the current number of keys (not entirely validated) in the table. 

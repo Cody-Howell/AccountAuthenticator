@@ -6,7 +6,7 @@
 /// </summary>
 public class IDMiddlewareConfig {
     /// <summary>
-    /// Set to the list of paths you want the middleware (Identity Middleware) 
+    /// Set to the list of paths that you want the middleware  
     /// to exclude authorization.
     /// </summary>
     public List<string> Paths { get; set; } = new List<string>();
@@ -19,8 +19,7 @@ public class IDMiddlewareConfig {
     public string? Whitelist { get; set; } = null;
 
     /// <summary>
-    /// Set to the timespan that API keys are valid for. <c>Null</c> enables no time validation 
-    /// (not recommended). 
+    /// Set to the timespan that API keys are valid for. <c>Null</c> enables no time validation. 
     /// </summary>
     public TimeSpan? ExpirationDate { get; set; } = null;
 
@@ -29,6 +28,7 @@ public class IDMiddlewareConfig {
     /// valid, reset the expiration date for their API key. 
     /// </summary>
     public TimeSpan? ReValidationDate { get; set; } = null;
+    
     /// <summary>
     /// Enables all levels of Traces, Debug, Information, and Error 
     /// in the IdentityMiddleware. Set different logging levels in appsettings.json.

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Data;
 
 namespace AccountAuthenticator;
@@ -11,12 +12,14 @@ public partial class AuthService {
     private Dictionary<string, Guid> guidLookup = new();
     private Dictionary<string, int> roleLookup = new();
     private DbConnector conn;
+    private ILogger<AuthService> logger;
 
     /// <summary>
     /// Do not call this directly. Use the DI container. 
     /// </summary>
-    public AuthService(IConfiguration config) {
+    public AuthService(IConfiguration config, ILogger<AuthService> logger) {
         conn = new DbConnector(config);
+        this.logger = logger;
     }
 
     #region User Creation/Validation
@@ -27,7 +30,7 @@ public partial class AuthService {
     /// <exception cref="ArgumentException"></exception>
     public Task AddUserAsync(string accountName, string defaultPassword = "password", int defaultRole = 0) =>
         conn.WithConnectionAsync(async conn => {
-            string passHash = StringHelper.CustomHash(defaultPassword);
+            string passHash = Argon2Helper.HashPassword(defaultPassword);
             Guid guid = Guid.NewGuid();
             var AddUser = "insert into \"HowlDev.User\" values (@guid, @accountName, @passHash, @defaultRole)";
             try {
@@ -60,7 +63,7 @@ public partial class AuthService {
     /// </summary>
     public Task<IEnumerable<Account>> GetAllUsersAsync() =>
         conn.WithConnectionAsync(async conn => {
-            var GetUsers = "select p.id, p.accountName, p.role from \"HowlDev.User\" p";
+            var GetUsers = "select p.id, p.accountName, p.role from \"HowlDev.User\" p order by 1";
             try {
                 return await conn.QueryAsync<Account>(GetUsers);
             } catch {
@@ -106,12 +109,13 @@ public partial class AuthService {
     /// <returns>If the hashed password equals the stored hash</returns>
     public Task<bool> IsValidUserPassAsync(string accountName, string password) =>
         conn.WithConnectionAsync(async conn => {
-            string hashedPassword = StringHelper.CustomHash(password);
-            var pass = "select p.passHash from \"HowlDev.User\" p where accountName = @accountName";
+            logger.LogTrace("Entered IsValidUserPassAsync.");
             try {
+                var pass = "select p.passHash from \"HowlDev.User\" p where accountName = @accountName";
                 string storedPassword = await conn.QuerySingleAsync<string>(pass, new { accountName });
-                return storedPassword == hashedPassword;
-            } catch {
+                return Argon2Helper.VerifyPassword(storedPassword, password);
+            } catch (Exception e) {
+                logger.LogWarning("Error: {a}", e);
                 return false;
             }
         }
@@ -138,7 +142,7 @@ public partial class AuthService {
     /// </summary>
     public Task UpdatePasswordAsync(string accountName, string newPassword) =>
         conn.WithConnectionAsync(async conn => {
-            string newHash = StringHelper.CustomHash(newPassword);
+            string newHash = Argon2Helper.HashPassword(newPassword);
             var pass = "update \"HowlDev.User\" p set passHash = @newHash where accountName = @accountName";
             await conn.ExecuteAsync(pass, new { accountName, newHash });
         }
@@ -210,9 +214,12 @@ public partial class AuthService {
     /// </summary>
     public Task<Guid> GetGuidAsync(string account) =>
         conn.WithConnectionAsync(async conn => {
+            logger.LogTrace("Entered GetGuidAsync");
             if (guidLookup.ContainsKey(account)) {
+                logger.LogDebug("GuidLookup contained key.");
                 return guidLookup[account];
             } else {
+                logger.LogDebug("GuidLookup did not contain the key.");
                 string guid = "select id from \"HowlDev.User\" where accountName = @account";
                 Guid theirGuid = await conn.QuerySingleAsync<Guid>(guid, new { account });
                 guidLookup.Add(account, theirGuid);
@@ -227,9 +234,12 @@ public partial class AuthService {
     /// </summary>
     public Task<int> GetRoleAsync(string account) =>
         conn.WithConnectionAsync(async conn => {
+            logger.LogTrace("Entered GetRoleAsync");
             if (roleLookup.ContainsKey(account)) {
+                logger.LogDebug("RoleLookup contained key.");
                 return roleLookup[account];
             } else {
+                logger.LogDebug("RoleLookup did not contain the key.");
                 string role = "select role from \"HowlDev.User\" where accountName = @account";
                 int theirRole = await conn.QuerySingleAsync<int>(role, new { account });
                 roleLookup.Add(account, theirRole);
@@ -243,6 +253,7 @@ public partial class AuthService {
     /// </summary>
     public Task<int> GetCurrentSessionCountAsync(string account) =>
         conn.WithConnectionAsync(async conn => {
+            logger.LogTrace("Entered GetCurrentSessionCountAsync");
             string connCount = "select count(*) from \"HowlDev.Key\" where accountId = @account";
             return await conn.QuerySingleAsync<int>(connCount, new { account });
         });

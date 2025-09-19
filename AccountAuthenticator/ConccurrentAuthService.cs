@@ -16,7 +16,7 @@ public partial class AuthService {
     /// <exception cref="ArgumentException"></exception>
     public void AddUser(string accountName, string defaultPassword = "password", int defaultRole = 0) =>
         conn.WithConnection(conn => {
-            string passHash = StringHelper.CustomHash(defaultPassword);
+            string passHash = Argon2Helper.HashPassword(defaultPassword);
             Guid guid = Guid.NewGuid();
             var AddUser = "insert into \"HowlDev.User\" values (@guid, @accountName, @passHash, @defaultRole)";
             try {
@@ -95,11 +95,10 @@ public partial class AuthService {
     /// <returns>If the hashed password equals the stored hash</returns>
     public bool IsValidUserPass(string accountName, string password) =>
         conn.WithConnection(conn => {
-            string hashedPassword = StringHelper.CustomHash(password);
-            var pass = "select p.passHash from \"HowlDev.User\" p where accountName = @accountName";
             try {
+                var pass = "select p.passHash from \"HowlDev.User\" p where accountName = @accountName";
                 string storedPassword = conn.QuerySingle<string>(pass, new { accountName });
-                return storedPassword == hashedPassword;
+                return Argon2Helper.VerifyPassword(storedPassword, password);
             } catch {
                 return false;
             }
@@ -127,7 +126,7 @@ public partial class AuthService {
     /// </summary>
     public void UpdatePassword(string accountName, string newPassword) =>
         conn.WithConnection(conn => {
-            string newHash = StringHelper.CustomHash(newPassword);
+            string newHash = Argon2Helper.HashPassword(newPassword);
             var pass = "update \"HowlDev.User\" p set passHash = @newHash where accountName = @accountName";
             conn.Execute(pass, new { accountName, newHash });
         }

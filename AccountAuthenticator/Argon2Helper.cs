@@ -8,7 +8,7 @@ namespace AccountAuthenticator;
 /// <summary>
 /// An AI-generated class to hash and validate hashes, using the Konscious cryptography library. 
 /// </summary>
-public static class Argon2Helper {
+internal static class Argon2Helper {
   // Default parameters – tune to your hardware and security policy
   private const int SaltSize = 16;          // 128‑bit
   private const int HashSize = 32;          // 256‑bit

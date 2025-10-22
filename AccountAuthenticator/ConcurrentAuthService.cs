@@ -1,12 +1,6 @@
-﻿using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace AccountAuthenticator;
 
-namespace AccountAuthenticator;
-public partial class AuthService {
+public partial class AuthService: IAuthService {
 
     #region User Creation/Validation
     /// <summary>

@@ -8,19 +8,10 @@ namespace AccountAuthenticator;
 /// <summary>
 /// Service implementation to handle the database. Runs through Dapper.
 /// </summary>
-public partial class AuthService {
+public partial class AuthService(IConfiguration config, ILogger<AuthService> logger) : IAuthService {
     private Dictionary<string, Guid> guidLookup = new();
     private Dictionary<string, int> roleLookup = new();
-    private DbConnector conn;
-    private ILogger<AuthService> logger;
-
-    /// <summary>
-    /// Do not call this directly. Use the DI container. 
-    /// </summary>
-    public AuthService(IConfiguration config, ILogger<AuthService> logger) {
-        conn = new DbConnector(config);
-        this.logger = logger;
-    }
+    private DbConnector conn = new DbConnector(config);
 
     #region User Creation/Validation
     /// <summary>

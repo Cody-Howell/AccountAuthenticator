@@ -5,6 +5,7 @@ using System.Data;
 using Npgsql;
 
 namespace AccountAuthenticator;
+
 /// <summary>
 /// DbConnector is an AI-assisted class that handles connection opening and closing, allowing 
 /// multi-threaded operations. Prior to this, all AuthService calls were single-threaded. 

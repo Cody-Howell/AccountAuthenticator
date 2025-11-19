@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Data;
 
 namespace AccountAuthenticator;
@@ -9,8 +10,8 @@ namespace AccountAuthenticator;
 /// Service implementation to handle the database. Runs through Dapper.
 /// </summary>
 public partial class AuthService(IConfiguration config, ILogger<AuthService> logger) : IAuthService {
-    private Dictionary<string, Guid> guidLookup = new();
-    private Dictionary<string, int> roleLookup = new();
+    private ConcurrentDictionary<string, Guid> guidLookup = new();
+    private ConcurrentDictionary<string, int> roleLookup = new();
     private DbConnector conn = new DbConnector(config);
 
     #region User Creation/Validation
@@ -213,7 +214,7 @@ public partial class AuthService(IConfiguration config, ILogger<AuthService> log
                 logger.LogDebug("GuidLookup did not contain the key.");
                 string guid = "select id from \"HowlDev.User\" where accountName = @account";
                 Guid theirGuid = await conn.QuerySingleAsync<Guid>(guid, new { account });
-                guidLookup.Add(account, theirGuid);
+                guidLookup.AddOrUpdate(account, theirGuid);
                 return theirGuid;
             }
         }
@@ -233,7 +234,7 @@ public partial class AuthService(IConfiguration config, ILogger<AuthService> log
                 logger.LogDebug("RoleLookup did not contain the key.");
                 string role = "select role from \"HowlDev.User\" where accountName = @account";
                 int theirRole = await conn.QuerySingleAsync<int>(role, new { account });
-                roleLookup.Add(account, theirRole);
+                roleLookup.AddOrUpdate(account, theirRole);
                 return theirRole;
             }
         }

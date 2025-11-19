@@ -77,6 +77,10 @@ For items in long-term storage:
 
 ## Changelog
 
+3.0.1 - Beta (11/19/25)
+
+- Changed into a concurrent dictionary for the lookups
+
 3.0 - Beta (9/18/25)
 
 Version 3 came *way* faster than I wanted. I'll be sitting in beta for a few months so I reduce the chance 

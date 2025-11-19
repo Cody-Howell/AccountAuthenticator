@@ -1,6 +1,6 @@
 ﻿namespace AccountAuthenticator;
 
-public partial class AuthService: IAuthService {
+public partial class AuthService : IAuthService {
 
     #region User Creation/Validation
     /// <summary>

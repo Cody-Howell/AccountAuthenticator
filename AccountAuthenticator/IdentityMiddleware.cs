@@ -109,4 +109,3 @@ public class IdentityMiddleware(RequestDelegate next, AuthService service, IDMid
         }
     }
 }
-

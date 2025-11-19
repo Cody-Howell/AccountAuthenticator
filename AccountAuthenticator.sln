@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountAuthenticator", "AccountAuthenticator\AccountAuthenticator.csproj", "{A2127E52-E6D5-4EE2-9D06-87BA944303BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountAuthenticator.API", "AccountAuthenticator.API\AccountAuthenticator.API.csproj", "{D7A3DF27-62D9-4D4B-BC53-56635119B354}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountAuthenticator.IntegrationTests", "AccountAuthenticator.IntegrationTests\AccountAuthenticator.IntegrationTests.csproj", "{60979E8A-8DD1-42D9-8665-81802F39470C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2127E52-E6D5-4EE2-9D06-87BA944303BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2127E52-E6D5-4EE2-9D06-87BA944303BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2127E52-E6D5-4EE2-9D06-87BA944303BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2127E52-E6D5-4EE2-9D06-87BA944303BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7A3DF27-62D9-4D4B-BC53-56635119B354}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7A3DF27-62D9-4D4B-BC53-56635119B354}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7A3DF27-62D9-4D4B-BC53-56635119B354}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7A3DF27-62D9-4D4B-BC53-56635119B354}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60979E8A-8DD1-42D9-8665-81802F39470C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60979E8A-8DD1-42D9-8665-81802F39470C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60979E8A-8DD1-42D9-8665-81802F39470C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60979E8A-8DD1-42D9-8665-81802F39470C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

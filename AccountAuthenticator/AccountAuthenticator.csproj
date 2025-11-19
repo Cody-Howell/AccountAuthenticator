@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
-		<Version>3.0-beta</Version>
+		<Version>3.0.1-beta</Version>
 		<Authors>Howl Dev</Authors>
 		<Description>A naive Account/Password auth package with a service and middleware for an API.</Description>
 		<PackageTags>auth</PackageTags>

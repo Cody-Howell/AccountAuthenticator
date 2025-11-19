@@ -1,6 +1,6 @@
 using AccountAuthenticator;
-using System.Data;
 using Npgsql;
+using System.Data;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +26,7 @@ app.MapGet("/health", () => "Hello");
 
 app.MapGet("/users", async (AuthService service) => await service.GetAllUsersAsync());
 app.MapGet("/user/exact", async (AuthService service, string account) => await service.GetUserAsync(account));
-app.MapGet("/user/count", async (AuthService service, string account) => await service.GetCurrentSessionCountAsync(account)); 
+app.MapGet("/user/count", async (AuthService service, string account) => await service.GetCurrentSessionCountAsync(account));
 app.MapPost("/user", async (AuthService service, string accountName) => {
     try {
         await service.AddUserAsync(accountName);

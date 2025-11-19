@@ -6,7 +6,7 @@ using TUnit.Core.Interfaces;
 
 public class WebAppFactory : WebApplicationFactory<AuthProgram>, IAsyncInitializer {
     public Task InitializeAsync() {
-        
+
         _ = Server;
 
         return Task.CompletedTask;

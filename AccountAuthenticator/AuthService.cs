@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
-using System.Data;
 
 namespace AccountAuthenticator;
 
@@ -207,14 +206,14 @@ public partial class AuthService(IConfiguration config, ILogger<AuthService> log
     public Task<Guid> GetGuidAsync(string account) =>
         conn.WithConnectionAsync(async conn => {
             logger.LogTrace("Entered GetGuidAsync");
-            if (guidLookup.ContainsKey(account)) {
+            if (guidLookup.TryGetValue(account, out Guid theirGuid)) {
                 logger.LogDebug("GuidLookup contained key.");
-                return guidLookup[account];
+                return theirGuid;
             } else {
                 logger.LogDebug("GuidLookup did not contain the key.");
                 string guid = "select id from \"HowlDev.User\" where accountName = @account";
-                Guid theirGuid = await conn.QuerySingleAsync<Guid>(guid, new { account });
-                guidLookup.AddOrUpdate(account, theirGuid);
+                theirGuid = await conn.QuerySingleAsync<Guid>(guid, new { account });
+                guidLookup.AddOrUpdate(account, theirGuid, (existingKey, existingValue) => theirGuid);
                 return theirGuid;
             }
         }
@@ -227,14 +226,14 @@ public partial class AuthService(IConfiguration config, ILogger<AuthService> log
     public Task<int> GetRoleAsync(string account) =>
         conn.WithConnectionAsync(async conn => {
             logger.LogTrace("Entered GetRoleAsync");
-            if (roleLookup.ContainsKey(account)) {
+            if (roleLookup.TryGetValue(account, out int theirRole)) {
                 logger.LogDebug("RoleLookup contained key.");
-                return roleLookup[account];
+                return theirRole;
             } else {
                 logger.LogDebug("RoleLookup did not contain the key.");
                 string role = "select role from \"HowlDev.User\" where accountName = @account";
-                int theirRole = await conn.QuerySingleAsync<int>(role, new { account });
-                roleLookup.AddOrUpdate(account, theirRole);
+                theirRole = await conn.QuerySingleAsync<int>(role, new { account });
+                roleLookup.AddOrUpdate(account, theirRole, (existingKey, existingValue) => theirRole);
                 return theirRole;
             }
         }

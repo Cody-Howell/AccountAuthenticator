@@ -1,4 +1,7 @@
-﻿namespace AccountAuthenticator;
+﻿using Dapper;
+using Microsoft.Extensions.Logging;
+
+namespace AccountAuthenticator;
 
 public partial class AuthService : IAuthService {
 
@@ -192,12 +195,15 @@ public partial class AuthService : IAuthService {
     /// </summary>
     public Guid GetGuid(string account) =>
         conn.WithConnection(conn => {
-            if (guidLookup.ContainsKey(account)) {
-                return guidLookup[account];
+            logger.LogTrace("Entered GetGuidAsync");
+            if (guidLookup.TryGetValue(account, out Guid theirGuid)) {
+                logger.LogDebug("GuidLookup contained key.");
+                return theirGuid;
             } else {
+                logger.LogDebug("GuidLookup did not contain the key.");
                 string guid = "select id from \"HowlDev.User\" where accountName = @account";
-                Guid theirGuid = conn.QuerySingle<Guid>(guid, new { account });
-                guidLookup.Add(account, theirGuid);
+                theirGuid = conn.QuerySingle<Guid>(guid, new { account });
+                guidLookup.AddOrUpdate(account, theirGuid, (existingKey, existingValue) => theirGuid);
                 return theirGuid;
             }
         }
@@ -209,12 +215,15 @@ public partial class AuthService : IAuthService {
     /// </summary>
     public int GetRole(string account) =>
         conn.WithConnection(conn => {
-            if (roleLookup.ContainsKey(account)) {
-                return roleLookup[account];
+            logger.LogTrace("Entered GetRole.");
+            if (roleLookup.TryGetValue(account, out int theirRole)) {
+                logger.LogDebug("RoleLookup contained key.");
+                return theirRole;
             } else {
+                logger.LogDebug("RoleLookup did not contain the key.");
                 string role = "select role from \"HowlDev.User\" where accountName = @account";
-                int theirRole = conn.QuerySingle<int>(role, new { account });
-                roleLookup.Add(account, theirRole);
+                theirRole = conn.QuerySingle<int>(role, new { account });
+                roleLookup.AddOrUpdate(account, theirRole, (existingKey, existingValue) => theirRole);
                 return theirRole;
             }
         }

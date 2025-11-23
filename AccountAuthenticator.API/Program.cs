@@ -16,8 +16,9 @@ var app = builder.Build();
 
 app.UseAccountIdentityMiddleware(options => {
     options.Paths = ["/users", "/user", "/user/signin", "/health"];
+    // options.DisableHeaderInfo = true;
     //options.ExpirationDate = new TimeSpan(1, 0, 0, 0);
-    //options.EnableLogging = true;
+    // options.EnableLogging = true;
 });
 
 app.UseRouting();

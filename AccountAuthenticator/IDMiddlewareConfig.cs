@@ -34,4 +34,11 @@ public class IDMiddlewareConfig {
     /// in the IdentityMiddleware. Set different logging levels in appsettings.json.
     /// </summary>
     public bool EnableLogging { get; set; } = false;
+
+    /// <summary>
+    /// Removes detailed error messages with invalid headers. As you shouldn't broadcast 
+    /// what headers are needed to bypass an authentication middleware, this should be disabled 
+    /// in production (and after you get your frontend API calls set up). 
+    /// </summary>
+    public bool DisableHeaderInfo { get; set; } = false;
 }

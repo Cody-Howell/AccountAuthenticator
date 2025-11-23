@@ -43,7 +43,11 @@ public class IdentityMiddleware(RequestDelegate next, AuthService service, IDMid
             string? key = context.Request.Headers["Account-Auth-ApiKey"];
             if (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(key)) {
                 context.Response.StatusCode = 401;
-                await context.Response.WriteAsync("Unauthorized: Missing header(s).\nRequires an \"Account-Auth-Account\" and \"Account-Auth-ApiKey\" header.");
+                if (config.DisableHeaderInfo) {
+                    await context.Response.WriteAsync("Unauthorized: Missing header(s).");
+                } else {
+                    await context.Response.WriteAsync("Unauthorized: Missing header(s).\nRequires an \"Account-Auth-Account\" and \"Account-Auth-ApiKey\" header.");
+                }
                 if (config.EnableLogging)
                     logger.LogInformation("Two required headers were not found. Found headers: {headers}", context.Request.Headers);
                 return;
